@@ -1,0 +1,79 @@
+
+---
+title: "PerMallows Testing"
+author: "Conor Bekaert"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+install.packages("PerMallows_1.13.tar.gz", repos=NULL, type="source")
+library("PerMallows")
+library(tidyverse)
+```
+
+```{r}
+rankings <- matrix(c(c(1,2,3),c(1,2,3),c(1,3,2)),nrow=3,byrow=T)
+ratings <- matrix(c(c(1,1,1),c(0,1,2),c(0,1,2)),nrow=3,byrow=T)
+
+print("Mallows estimation:")
+lmm(rankings, dist.name="kendall", estimation="approx")
+
+print("Mean ratings:")
+colMeans(as.data.frame(ratings))
+```
+
+
+
+
+```{r}
+# Simulated data 1
+rankings <- matrix(c(c(1,2,3,4),c(1,2,3,4),c(1,2,3,4),c(1,2,4,3),c(1,2,4,3),c(2,1,3,4),c(2,1,3,4),c(2,1,4,3),c(2,1,4,3),c(3,2,4,1)),nrow=10,byrow=T)
+ratings <- matrix(c(c(0,0,2,4),c(0,0,3,4),c(0,1,2,2),c(0,1,3,3),c(0,1,2,3),c(0,1,2,4),c(0,2,4,3),c(1,1,2,3),c(2,0,3,4),c(2,1,4,3)),nrow=10,byrow=T)
+
+print("Mallows estimation:")
+lmm(rankings, dist.name="kendall", estimation="approx")
+
+print("Mean ratings:")
+colMeans(as.data.frame(ratings))
+```
+
+```{r}
+# Salmon data
+# Monday ratings
+likert_scale <- matrix(c(c(5,5,3,2),c(3,2,5,5),c(4,5,4,5),c(1,3,4,4),c(5,4,2,3),c(5,5,1,4),c(4,5,3,4),c(5,4,2,4),c(3,4,4,1),c(4,4,2,3)),nrow=10,byrow=T)
+# Tuesday rankings
+likert_scale2 <- matrix(c(c(4,4,3,2),c(5,4,3,4),c(5,4,3,3),c(3,3,1,2),c(5,4,3,4),c(5,5,5,4),c(4,4,3,4),c(3,4,2,4),c(5,5,5,5)),nrow=9,byrow=T)
+ratings <- -1*((likert_scale-1)-4)
+ratings2 <- -1*((likert_scale2-1)-4)
+# Monday rankings
+rankings <- matrix(c(c(3,4,1,2),c(3,4,1,2),c(3,1,4,2),c(3,1,4,2),c(1,4,2,3),c(2,1,4,3),c(3,4,1,2),c(3,1,4,2),c(3,1,2,4),c(3,1,4,2),c(2,4,1,3),c(4,3,1,2),c(3,2,1,4),c(3,4,1,2),c(3,4,1,2),c(2,1,4,3),c(3,4,1,2),c(4,3,1,2),c(3,4,2,1),c(3,2,4,1),c(3,1,4,2),c(3,1,2,4),c(4,3,1,2),c(3,4,2,1),c(3,4,2,1),c(3,4,1,2),c(3,4,2,1)),nrow=27,byrow=T)
+# Tuesday rankings
+rankings2 <- matrix(c(c(2,4,1,3),c(1,3,4,2),c(4,1,3,2),c(4,2,3,1),c(3,4,1,2),c(4,3,2,1),c(3,4,2,1),c(1,3,4,2),c(3,4,2,1),c(3,2,4,1),c(4,1,3,2),c(3,1,2,4),c(4,3,1,2),c(3,1,4,2),c(3,4,1,2),c(3,4,2,1),c(3,1,4,2),c(4,3,2,1),c(3,4,1,2),c(1,3,2,4),c(4,1,3,2),c(4,2,3,1),c(3,2,4,1),c(4,1,2,3),c(4,1,2,3),c(3,4,2,1),c(3,4,1,2)),nrow=27,byrow=T)
+# Trim the rankings down to the same size as the ratings
+# Selected seeds
+#set.seed(325)
+#set.seed(826678)
+#set.seed(151627)
+set.seed(297521)
+# Randomly sample the same number of rankings as there are available ratings
+rankings <- rankings[sample(nrow(rankings),size=10,replace=FALSE),]
+rankings2 <- rankings2[sample(nrow(rankings2),size=9,replace=FALSE),]
+
+# Merge the two days, since the samples are from the same fillets
+rankings <- rbind(rankings, rankings2)
+ratings <- rbind(ratings, ratings2)
+
+# Optional: Resample a smaller selection from the rankings and ratings
+rankings <- rankings[sample(nrow(rankings),size=15,replace=TRUE),]
+ratings <- ratings[sample(nrow(ratings),size=15,replace=TRUE),]
+
+print("Mallows estimation:")
+lmm(rankings, dist.name="kendall", estimation="approx")
+
+print("Mean ratings:")
+colMeans(as.data.frame(ratings))
+```
+
+
+
